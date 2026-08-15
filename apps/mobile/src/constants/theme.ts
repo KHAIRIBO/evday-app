@@ -1,55 +1,44 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Khairibo app theme — fixed dark palette (lime / ink / panel), matching
+ * the product design (claude.ai/design "Personal Workspace App - Modern
+ * Design"). Not a light/dark adaptive theme — this look is the product.
  */
 
-import '@/global.css';
-
-import { Platform } from 'react-native';
-
 export const Colors = {
-  light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
-  },
-  dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
-  },
+  ink: '#121212',
+  panel: '#1c1c1c',
+  panelBorder: 'rgba(255,255,255,0.08)',
+  panelBorderSoft: 'rgba(255,255,255,0.07)',
+  tabbar: '#171717',
+
+  lime: '#d8f34a',
+  limeText: '#131313',
+  limeSoft: 'rgba(216,243,74,0.12)',
+  limeSoftBorder: 'rgba(216,243,74,0.28)',
+
+  text: '#ffffff',
+  textMuted: 'rgba(255,255,255,0.5)',
+  textFaint: 'rgba(255,255,255,0.4)',
+  textGhost: 'rgba(255,255,255,0.3)',
+
+  chipBg: 'rgba(255,255,255,0.07)',
+  chipBorder: 'rgba(255,255,255,0.1)',
+  fieldBg: '#1c1c1c',
+  fieldBorder: 'rgba(255,255,255,0.1)',
+
+  danger: '#ec3013',
 } as const;
 
-export type ThemeColor = keyof typeof Colors.light & keyof typeof Colors.dark;
+export type ColorToken = keyof typeof Colors;
 
-export const Fonts = Platform.select({
-  ios: {
-    /** iOS `UIFontDescriptorSystemDesignDefault` */
-    sans: 'system-ui',
-    /** iOS `UIFontDescriptorSystemDesignSerif` */
-    serif: 'ui-serif',
-    /** iOS `UIFontDescriptorSystemDesignRounded` */
-    rounded: 'ui-rounded',
-    /** iOS `UIFontDescriptorSystemDesignMonospaced` */
-    mono: 'ui-monospace',
-  },
-  default: {
-    sans: 'normal',
-    serif: 'serif',
-    rounded: 'normal',
-    mono: 'monospace',
-  },
-  web: {
-    sans: 'var(--font-display)',
-    serif: 'var(--font-serif)',
-    rounded: 'var(--font-rounded)',
-    mono: 'var(--font-mono)',
-  },
-});
+export const Fonts = {
+  regular: 'Archivo_400Regular',
+  medium: 'Archivo_500Medium',
+  semiBold: 'Archivo_600SemiBold',
+  bold: 'Archivo_700Bold',
+  extraBold: 'Archivo_800ExtraBold',
+  mono: 'ui-monospace, Menlo, monospace',
+} as const;
 
 export const Spacing = {
   half: 2,
@@ -61,5 +50,14 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const BottomTabInset = Platform.select({ ios: 50, android: 80 }) ?? 0;
-export const MaxContentWidth = 800;
+export const Radii = {
+  sm: 8,
+  md: 12,
+  lg: 15,
+  xl: 16,
+  xxl: 20,
+  pill: 999,
+} as const;
+
+export const BottomTabInset = 0;
+export const MaxContentWidth = 480;

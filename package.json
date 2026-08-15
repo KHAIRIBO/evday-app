@@ -9,5 +9,8 @@
     "mobile:ios": "pnpm --filter mobile ios",
     "api": "pnpm --filter api dev",
     "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "expo": "~57.0.13"
   }
 }

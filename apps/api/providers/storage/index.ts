@@ -3,4 +3,13 @@ export interface StorageProvider {
   createSignedDownloadUrl(path: string): Promise<{ url: string }>;
 }
 
-// TODO: wire up supabase.ts (default) and google-drive.ts.
+import { SupabaseStorageProvider } from './supabase';
+// TODO: google-drive.ts — no OAuth flow or UI built for it yet
+// (integrations/google_drive_accounts tables exist, nothing consumes them).
+
+let instance: StorageProvider | null = null;
+
+export function getStorageProvider(): StorageProvider {
+  if (!instance) instance = new SupabaseStorageProvider();
+  return instance;
+}

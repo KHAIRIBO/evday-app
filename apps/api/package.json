@@ -9,12 +9,15 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.117.1",
     "@supabase/supabase-js": "^2.45.0",
+    "@upstash/redis": "^1.38.2",
     "@workspace/shared": "workspace:*",
     "jose": "^5.9.0",
     "next": "^15.0.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "resend": "^6.20.0",
     "zod": "^3.23.0"
   },
   "devDependencies": {
