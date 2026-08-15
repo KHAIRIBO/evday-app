@@ -1,5 +1,6 @@
-import * as SecureStore from 'expo-secure-store';
 import { create } from 'zustand';
+
+import { secureStorage } from '@/lib/secure-storage';
 
 // Real session store: refreshToken lives in SecureStore (OS keychain),
 // accessToken lives only in memory and is re-acquired via /api/auth/refresh
@@ -47,39 +48,39 @@ export const useSession = create<SessionState>((set) => ({
 
   hydrate: async () => {
     const [passcodeHash, refreshToken] = await Promise.all([
-      SecureStore.getItemAsync(PASSCODE_HASH_KEY),
-      SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
+      secureStorage.getItem(PASSCODE_HASH_KEY),
+      secureStorage.getItem(REFRESH_TOKEN_KEY),
     ]);
     set({ hasPasscode: Boolean(passcodeHash), hasStoredSession: Boolean(refreshToken), hydrated: true });
   },
 
   setSession: async ({ accessToken, refreshToken, user }) => {
-    await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, refreshToken);
+    await secureStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     set({ accessToken, user, hasStoredSession: true });
   },
 
   setAccessToken: (token) => set({ accessToken: token }),
 
   clearSession: async () => {
-    await SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY);
+    await secureStorage.deleteItem(REFRESH_TOKEN_KEY);
     set({ accessToken: null, user: null, hasStoredSession: false });
   },
 
-  getRefreshToken: () => SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
+  getRefreshToken: () => secureStorage.getItem(REFRESH_TOKEN_KEY),
 
   setPasscode: async (pin) => {
-    await SecureStore.setItemAsync(PASSCODE_HASH_KEY, await hashPin(pin));
+    await secureStorage.setItem(PASSCODE_HASH_KEY, await hashPin(pin));
     set({ hasPasscode: true });
   },
 
   verifyPasscode: async (pin) => {
-    const stored = await SecureStore.getItemAsync(PASSCODE_HASH_KEY);
+    const stored = await secureStorage.getItem(PASSCODE_HASH_KEY);
     if (!stored) return false;
     return (await hashPin(pin)) === stored;
   },
 
   clearPasscode: async () => {
-    await SecureStore.deleteItemAsync(PASSCODE_HASH_KEY);
+    await secureStorage.deleteItem(PASSCODE_HASH_KEY);
     set({ hasPasscode: false });
   },
 }));

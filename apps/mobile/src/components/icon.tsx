@@ -279,3 +279,115 @@ export function IconSend({ size = 18, color = '#131313', strokeWidth = 2.2 }: Ic
     </Svg>
   );
 }
+
+// --- Weather icons — simple, geometrically-confident constructions rather
+// than recalled-from-memory complex paths for icons with no reference
+// source (unlike the set above, lifted verbatim from the mockup). Still
+// match the rest of the set's stroke-outline style.
+
+export function IconSun({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Circle cx="12" cy="12" r="4" />
+      <Path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+    </Svg>
+  );
+}
+
+export function IconCloud({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
+    </Svg>
+  );
+}
+
+export function IconCloudRain({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+      <Path d="M16 14v6M8 14v6M12 16v6" />
+    </Svg>
+  );
+}
+
+export function IconCloudDrizzle({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242" />
+      <Path d="M8 19v1M8 14v1M16 19v1M16 14v1M12 21v1M12 16v1" />
+    </Svg>
+  );
+}
+
+export function IconCloudLightning({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M6 16.326A7 7 0 1 1 15.71 9h1.79a4.5 4.5 0 0 1 .5 8.973" />
+      <Path d="m13 12-3 5h4l-3 5" />
+    </Svg>
+  );
+}
+
+export function IconSnow({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 2v20M2 12h20M5 5l14 14M19 5 5 19" />
+    </Svg>
+  );
+}
+
+// Shared for Fog/Mist/Haze — visually similar atmospheric conditions,
+// reusing one icon is a reasonable simplification, not a missing feature.
+export function IconFog({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M3 8h18M6 12h12M3 16h18" />
+    </Svg>
+  );
+}
+
+export function IconDroplet({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 2C12 2 5 10.5 5 15a7 7 0 0 0 14 0c0-4.5-7-13-7-13z" />
+    </Svg>
+  );
+}
+
+export function IconWind({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M9.59 4.59A2 2 0 1 1 11 8H2m10.59 11.41A2 2 0 1 0 14 16H2m15.73-8.27A2.5 2.5 0 1 1 19.5 12H2" />
+    </Svg>
+  );
+}
+
+export function IconMapPin({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M12 22s7-7.58 7-13A7 7 0 0 0 5 9c0 5.42 7 13 7 13Z" />
+      <Circle cx="12" cy="9" r="2.5" />
+    </Svg>
+  );
+}
+
+export function IconEye({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" />
+      <Circle cx="12" cy="12" r="3" />
+    </Svg>
+  );
+}

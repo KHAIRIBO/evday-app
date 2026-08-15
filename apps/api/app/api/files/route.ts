@@ -68,9 +68,19 @@ export async function GET(req: NextRequest) {
     const type = req.nextUrl.searchParams.get('type'); // image | document | video | scan
     const search = req.nextUrl.searchParams.get('search');
 
+    // A conditional select() string (e.g. '*, ocr_results!inner(id)') breaks
+    // supabase-js's compile-time query-string parser — it only type-checks
+    // string literals, not a runtime-computed one. Two queries instead.
+    let scannedFileIds: string[] | null = null;
+    if (type === 'scan') {
+      const { data: ocrRows, error: ocrErr } = await admin.from('ocr_results').select('file_id');
+      if (ocrErr) throw ocrErr;
+      scannedFileIds = ocrRows.map((r) => r.file_id);
+    }
+
     let q = admin
       .from('workspace_files')
-      .select(type === 'scan' ? '*, ocr_results!inner(id)' : '*')
+      .select('*')
       .eq('user_id', profileId)
       .eq('is_deleted', false)
       .order('created_at', { ascending: false })
@@ -83,6 +93,7 @@ export async function GET(req: NextRequest) {
     if (type === 'image') q = q.like('mime_type', 'image/%');
     else if (type === 'video') q = q.like('mime_type', 'video/%');
     else if (type === 'document') q = q.or(DOCUMENT_MIME_OR);
+    else if (type === 'scan') q = q.in('id', scannedFileIds ?? []);
 
     const { data, error } = await q;
     if (error) throw error;

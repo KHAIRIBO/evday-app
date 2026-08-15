@@ -35,7 +35,13 @@
         }
       ],
       "expo-secure-store",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-location",
+        {
+          "locationWhenInUsePermission": "Khairibo uses your location to show the weather for where you are."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

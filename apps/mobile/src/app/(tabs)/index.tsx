@@ -20,6 +20,7 @@ import {
 import { IconButton } from '@/components/ui/icon-button';
 import { ListItem } from '@/components/ui/list-item';
 import { Panel } from '@/components/ui/panel';
+import { WeatherCard } from '@/components/weather-card';
 import { QuickAction } from '@/components/ui/quick-action';
 import { SectionHeader } from '@/components/ui/section-header';
 import { SegmentedControl } from '@/components/ui/segmented';
@@ -156,6 +157,8 @@ export default function HomeScreen() {
           value={PERIODS.find((p) => p.value === period)?.label ?? 'Week'}
           onChange={(label) => setPeriod(PERIODS.find((p) => p.label === label)?.value ?? 'week')}
         />
+
+        <WeatherCard />
 
         {analytics.isLoading ? (
           <Panel style={styles.centerPanel}>

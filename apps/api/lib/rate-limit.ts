@@ -1,4 +1,4 @@
-import { Redis } from '@upstash/redis';
+import { getRedis } from './redis';
 
 // Budgets per architecture.md: 1000 req/h general, 60/h assistant,
 // 500 MB/day upload. `amount` lets one function cover both request-count
@@ -9,21 +9,6 @@ const BUDGETS = {
   assistant: { limit: 60, windowSeconds: 3600 },
   upload: { limit: 500 * 1024 * 1024, windowSeconds: 24 * 3600 },
 } as const;
-
-let client: Redis | null | undefined;
-
-function getRedis(): Redis | null {
-  if (client !== undefined) return client;
-  const url = process.env.UPSTASH_REDIS_REST_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
-  if (!url || !token) {
-    console.warn('[rate-limit] UPSTASH_REDIS_REST_URL/TOKEN not set — rate limiting disabled');
-    client = null;
-    return null;
-  }
-  client = new Redis({ url, token });
-  return client;
-}
 
 export async function checkRateLimit(key: string, bucket: keyof typeof BUDGETS, amount = 1): Promise<boolean> {
   const redis = getRedis();

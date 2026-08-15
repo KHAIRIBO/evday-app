@@ -15,6 +15,7 @@
     "@workspace/shared": "workspace:*",
     "jose": "^5.9.0",
     "next": "^15.0.0",
+    "nodemailer": "^9.0.5",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "resend": "^6.20.0",
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
+    "@types/nodemailer": "^8.0.1",
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
     "eslint-config-next": "^15.0.0",

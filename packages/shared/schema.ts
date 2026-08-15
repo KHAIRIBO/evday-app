@@ -116,6 +116,48 @@ export const AnalyticsSummary = z.object({
 export type AnalyticsSummaryT = z.infer<typeof AnalyticsSummary>;
 
 // ============================================================
+// Weather — GET /api/weather. Server-only OpenWeather key; the mobile
+// client never sees it, only the mapped result.
+// ============================================================
+export const WeatherCondition = z.enum([
+  'Clear',
+  'Clouds',
+  'Rain',
+  'Drizzle',
+  'Thunderstorm',
+  'Snow',
+  'Fog',
+  'Mist',
+  'Haze',
+]);
+export type WeatherConditionT = z.infer<typeof WeatherCondition>;
+
+export const WeatherForecastDay = z.object({
+  date: z.string(), // YYYY-MM-DD
+  highC: z.number(),
+  lowC: z.number(),
+  condition: WeatherCondition,
+});
+export type WeatherForecastDayT = z.infer<typeof WeatherForecastDay>;
+
+export const WeatherDetail = z.object({
+  city: z.string(),
+  tempC: z.number(),
+  condition: WeatherCondition,
+  conditionDescription: z.string(),
+  highC: z.number(),
+  lowC: z.number(),
+  humidity: z.number(),
+  windKph: z.number(),
+  visibilityKm: z.number().nullable(),
+  sunrise: z.string().datetime({ offset: true }),
+  sunset: z.string().datetime({ offset: true }),
+  updatedAt: z.string().datetime({ offset: true }),
+  forecast: z.array(WeatherForecastDay),
+});
+export type WeatherDetailT = z.infer<typeof WeatherDetail>;
+
+// ============================================================
 // Activity — read side of activity_logs (apps/api/lib/activity.ts writes it)
 // ============================================================
 export const ActivityLogRecord = z.object({
