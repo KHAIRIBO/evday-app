@@ -4,6 +4,8 @@ A personal workspace app — files, notes, an AI assistant, and a calculator in 
 
 > **Status:** active development. Auth, files, notes, the AI assistant, weather, and analytics are wired to a real backend and database — no mock data. Document scanning is real OCR text-extraction (not edge-detection/perspective correction — see [Known limitations](#known-limitations)), and Google Drive integration has its database schema in place but no working sync yet.
 
+![khairibo app preview — sign-in, Touch ID, email verification, home, calculator, files, and AI chat screens](docs/screenshots/app-preview.png)
+
 ---
 
 ## Contents
