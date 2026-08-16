@@ -5,8 +5,10 @@ export interface AIProvider {
 
 import { AnthropicProvider } from './anthropic';
 import { OmniRouteProvider } from './omniroute';
-// TODO: openai.ts, gemini.ts — not implemented. Only ANTHROPIC_API_KEY and
-// OMNIROUTE_API_KEY are wired up; other AI_PROVIDER values throw below.
+import { OpenRouterProvider } from './openrouter';
+// TODO: openai.ts (direct), gemini.ts — not implemented. ANTHROPIC_API_KEY,
+// OMNIROUTE_API_KEY, and OPENROUTER_API_KEY are wired up; other
+// AI_PROVIDER values throw below.
 
 const registry: Record<string, () => AIProvider> = {
   anthropic: () => {
@@ -21,6 +23,15 @@ const registry: Record<string, () => AIProvider> = {
     const model = process.env.OMNIROUTE_MODEL;
     if (!model) throw new Error('OMNIROUTE_MODEL is not set — pick a model configured in your OmniRoute dashboard');
     return new OmniRouteProvider(key, baseUrl, model);
+  },
+  openrouter: () => {
+    const key = process.env.OPENROUTER_API_KEY;
+    if (!key) throw new Error('OPENROUTER_API_KEY is not set');
+    // Unlike OmniRoute's arbitrary self-hosted config, OpenRouter has a
+    // stable public model catalog — safe to default rather than require
+    // manual setup. Overridable per-deployment via OPENROUTER_MODEL.
+    const model = process.env.OPENROUTER_MODEL ?? 'openai/gpt-4o-mini';
+    return new OpenRouterProvider(key, model);
   },
 };
 

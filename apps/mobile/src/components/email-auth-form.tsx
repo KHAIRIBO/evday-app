@@ -1,6 +1,6 @@
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
-import { Text, TextInput, View, StyleSheet } from 'react-native';
+import { Pressable, Text, TextInput, View, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { authApi } from '@/api/auth';
@@ -11,11 +11,23 @@ import { Colors, Fonts, Radii, Spacing } from '@/constants/theme';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Not in the original mockup — the design jumped straight from "Create an
-// account" to a pre-filled OTP screen. An email has to come from
-// somewhere real; this is that missing step, built in the same visual
-// language as the rest of the auth flow.
-export default function EmailScreen() {
+type Props = {
+  title: string;
+  subtitle: string;
+  linkPrompt: string;
+  linkLabel: string;
+  linkHref: '/(auth)/signin' | '/(auth)/signup';
+};
+
+/**
+ * Shared by signin.tsx and signup.tsx — there's no separate backend call
+ * for "login" vs "register" (requestCode always hits /register, which is
+ * idempotent: existing email -> logs in, new email -> creates the
+ * account). The two screens are a real UX distinction — different
+ * copy/link, both landing on the same honest passwordless flow — not two
+ * different code paths pretending to be one.
+ */
+export function EmailAuthForm({ title, subtitle, linkPrompt, linkLabel, linkHref }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -43,8 +55,8 @@ export default function EmailScreen() {
         <View style={styles.badge}>
           <IconFolder size={24} color={Colors.limeText} strokeWidth={2} />
         </View>
-        <Text style={styles.title}>Sign in or{'\n'}create an account</Text>
-        <Text style={styles.subtitle}>Enter your email — we’ll send a 6-digit code, no password needed.</Text>
+        <Text style={styles.title}>{title}</Text>
+        <Text style={styles.subtitle}>{subtitle}</Text>
 
         <View style={styles.fieldWrap}>
           <Text style={styles.fieldLabel}>Email</Text>
@@ -68,6 +80,11 @@ export default function EmailScreen() {
         <LimeButton label={loading ? 'Sending…' : 'Continue'} onPress={submit} disabled={!valid || loading}>
           <IconArrowRight size={18} />
         </LimeButton>
+
+        <Pressable style={styles.linkRow} onPress={() => router.replace(linkHref)}>
+          <Text style={styles.linkPrompt}>{linkPrompt} </Text>
+          <Text style={styles.linkLabel}>{linkLabel}</Text>
+        </Pressable>
       </View>
     </SafeAreaView>
   );
@@ -132,5 +149,20 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.medium,
     fontSize: 11.5,
     color: Colors.danger,
+  },
+  linkRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 6,
+  },
+  linkPrompt: {
+    fontFamily: Fonts.medium,
+    fontSize: 12,
+    color: Colors.textMuted,
+  },
+  linkLabel: {
+    fontFamily: Fonts.semiBold,
+    fontSize: 12,
+    color: Colors.lime,
   },
 });

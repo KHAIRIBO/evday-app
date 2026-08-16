@@ -1,7 +1,5 @@
-import * as Sharing from 'expo-sharing';
-// see the comment in src/api/files.ts — /legacy is the procedural API
-import * as FileSystem from 'expo-file-system/legacy';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import {
   ActivityIndicator,
@@ -32,6 +30,7 @@ import { IconButton } from '@/components/ui/icon-button';
 import { ListItem } from '@/components/ui/list-item';
 import { SectionHeader } from '@/components/ui/section-header';
 import { Colors, Fonts, Radii, Spacing } from '@/constants/theme';
+import { useFileActions } from '@/features/file-actions';
 import { pickDocument, useUploadMutation } from '@/features/upload';
 import type { FileRecordT } from '@workspace/shared/schema';
 
@@ -58,6 +57,8 @@ function iconForFile(file: FileRecordT) {
 
 export default function FilesScreen() {
   const qc = useQueryClient();
+  const router = useRouter();
+  const { openActions } = useFileActions();
   const [filter, setFilter] = useState<(typeof FILTERS)[number]['value']>(undefined);
   const [selectedFolder, setSelectedFolder] = useState<{ id: string; name: string } | null>(null);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -82,19 +83,6 @@ export default function FilesScreen() {
     },
   });
 
-  const toggleFavorite = useMutation({
-    mutationFn: ({ id, isFavorite }: { id: string; isFavorite: boolean }) => filesApi.update(id, { isFavorite }),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['files'] }),
-  });
-
-  const deleteFile = useMutation({
-    mutationFn: (id: string) => filesApi.remove(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ['files'] });
-      qc.invalidateQueries({ queryKey: ['analytics'] });
-    },
-  });
-
   const totalBytes = useMemo(() => (files.data?.data ?? []).reduce((sum, f) => sum + f.size, 0), [files.data]);
 
   async function handleUploadButton() {
@@ -109,42 +97,6 @@ export default function FilesScreen() {
       { text: 'New folder', onPress: () => setCreatingFolder(true) },
       { text: 'Cancel', style: 'cancel' },
     ]);
-  }
-
-  async function handleFileActions(file: FileRecordT) {
-    Alert.alert(file.name, undefined, [
-      {
-        text: file.isFavorite ? 'Remove from favorites' : 'Add to favorites',
-        onPress: () => toggleFavorite.mutate({ id: file.id, isFavorite: !file.isFavorite }),
-      },
-      { text: 'Share', onPress: () => shareFile(file) },
-      {
-        text: 'Delete',
-        style: 'destructive',
-        onPress: () =>
-          Alert.alert('Delete file?', `"${file.name}" will be moved to trash.`, [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Delete', style: 'destructive', onPress: () => deleteFile.mutate(file.id) },
-          ]),
-      },
-      { text: 'Cancel', style: 'cancel' },
-    ]);
-  }
-
-  async function shareFile(file: FileRecordT) {
-    try {
-      const { url } = await filesApi.signedUrl(file.id);
-      const canShare = await Sharing.isAvailableAsync();
-      if (!canShare) {
-        Alert.alert('Sharing unavailable', 'This device can’t open the share sheet.');
-        return;
-      }
-      const localPath = `${FileSystem.cacheDirectory}${file.name}`;
-      const { uri } = await FileSystem.downloadAsync(url, localPath);
-      await Sharing.shareAsync(uri);
-    } catch (e) {
-      Alert.alert('Share failed', e instanceof Error ? e.message : 'Could not share this file');
-    }
   }
 
   return (
@@ -256,7 +208,9 @@ export default function FilesScreen() {
                     name={f.name}
                     meta={`${formatBytes(f.size)} · ${new Date(f.createdAt).toLocaleDateString()}`}
                     trailing="kebab"
-                    onPress={() => handleFileActions(f)}
+                    onPress={() => router.push({ pathname: '/files/[id]', params: { id: f.id } })}
+                    onLongPress={() => openActions(f)}
+                    onKebabPress={() => openActions(f)}
                   />
                 );
               })}

@@ -41,7 +41,27 @@
         {
           "locationWhenInUsePermission": "Khairibo uses your location to show the weather for where you are."
         }
-      ]
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "Khairibo uses your microphone to record audio notes."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Khairibo uses your photo library so you can upload photos and videos to your files.",
+          "cameraPermission": "Khairibo uses your camera to take photos to upload."
+        }
+      ],
+      [
+        "expo-media-library",
+        {
+          "savePhotosPermission": "Khairibo saves the photos you take to your camera roll."
+        }
+      ],
+      "expo-video"
     ],
     "experiments": {
       "typedRoutes": true,

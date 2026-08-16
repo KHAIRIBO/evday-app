@@ -207,6 +207,23 @@ export const AuthTokens = z.object({
 export type AuthTokensT = z.infer<typeof AuthTokens>;
 
 // ============================================================
+// Profile — GET/PATCH /api/profile
+// ============================================================
+export const ProfileRecord = z.object({
+  email: z.string().email(),
+  displayName: z.string().nullable(),
+  avatarUrl: z.string().nullable(),
+  storageQuota: z.number(),
+  createdAt: z.string().datetime({ offset: true }),
+});
+export type ProfileRecordT = z.infer<typeof ProfileRecord>;
+
+export const UpdateProfileInput = z.object({
+  displayName: z.string().trim().min(1).max(80).nullable(),
+});
+export type UpdateProfileInputT = z.infer<typeof UpdateProfileInput>;
+
+// ============================================================
 // Assistant
 // ============================================================
 export const ConversationRecord = z.object({

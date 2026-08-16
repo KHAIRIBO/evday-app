@@ -13,7 +13,7 @@ import { useSession } from '@/stores/session';
 import { Colors, Fonts, Spacing } from '@/constants/theme';
 
 const CODE_LENGTH = 6;
-const RESEND_SECONDS = 30;
+const RESEND_SECONDS = 60;
 
 function maskEmail(email: string) {
   const [name, domain] = email.split('@');
@@ -69,7 +69,7 @@ export default function VerifyScreen() {
     }
   }
 
-  const mins = Math.floor(seconds / 60);
+  const mins = String(Math.floor(seconds / 60)).padStart(2, '0');
   const secs = String(seconds % 60).padStart(2, '0');
 
   return (

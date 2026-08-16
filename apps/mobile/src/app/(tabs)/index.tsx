@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
+import { AudioModule, RecordingPresets, setAudioModeAsync, useAudioRecorder, useAudioRecorderState } from 'expo-audio';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -6,16 +7,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { activityApi } from '@/api/activity';
 import { analyticsApi, type AnalyticsPeriod } from '@/api/analytics';
+import { ocrApi } from '@/api/ocr';
 import {
   IconBell,
   IconBot,
   IconCamera,
   IconDatabase,
   IconFileText,
+  IconImage,
+  IconMic,
   IconPencil,
   IconScan,
   IconSearch,
   IconUpload,
+  IconUser,
 } from '@/components/icon';
 import { IconButton } from '@/components/ui/icon-button';
 import { ListItem } from '@/components/ui/list-item';
@@ -26,7 +31,7 @@ import { SectionHeader } from '@/components/ui/section-header';
 import { SegmentedControl } from '@/components/ui/segmented';
 import { StatCard } from '@/components/ui/stat-card';
 import { Colors, Fonts, Spacing } from '@/constants/theme';
-import { captureFromCamera, pickDocument, useUploadMutation } from '@/features/upload';
+import { captureFromCamera, pickDocument, pickFromLibrary, saveToDeviceLibrary, useUploadMutation } from '@/features/upload';
 import type { ActivityLogRecordT } from '@workspace/shared/schema';
 
 const PERIODS: { label: string; value: AnalyticsPeriod }[] = [
@@ -80,6 +85,9 @@ export default function HomeScreen() {
   const router = useRouter();
   const [period, setPeriod] = useState<AnalyticsPeriod>('week');
   const upload = useUploadMutation();
+  const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
+  const recorderState = useAudioRecorderState(recorder);
+  const [scanning, setScanning] = useState(false);
 
   const analytics = useQuery({
     queryKey: ['analytics', period],
@@ -99,6 +107,11 @@ export default function HomeScreen() {
       const asset = await captureFromCamera();
       if (!asset) return;
       await upload.mutateAsync({ asset });
+      // Best-effort: also save the photo to the device's own camera roll,
+      // not just upload it into the app. A denied/failed gallery write
+      // shouldn't surface as an upload failure — the file already
+      // uploaded fine either way.
+      void saveToDeviceLibrary(asset.uri);
     } catch (e) {
       Alert.alert('Camera', e instanceof Error ? e.message : 'Could not capture photo');
     }
@@ -114,11 +127,67 @@ export default function HomeScreen() {
     }
   }
 
-  function handleScan() {
-    // Document scanning (page detection, perspective correction, multi-page
-    // PDF assembly) isn't built yet — Phase 2. Saying so honestly beats a
-    // button that looks real and does nothing.
-    Alert.alert('Scan', 'Document scanning is coming soon.');
+  async function handleMedia() {
+    try {
+      const asset = await pickFromLibrary();
+      if (!asset) return;
+      await upload.mutateAsync({ asset });
+    } catch (e) {
+      Alert.alert('Media', e instanceof Error ? e.message : 'Could not upload from your library');
+    }
+  }
+
+  async function handleAudio() {
+    // Tap once to start, tap again to stop and upload — a real recorder,
+    // not a placeholder, using the device microphone via expo-audio.
+    if (recorderState.isRecording) {
+      try {
+        await recorder.stop();
+        const uri = recorder.uri;
+        if (!uri) throw new Error('Recording produced no file');
+        await upload.mutateAsync({ asset: { uri, name: `audio-${Date.now()}.m4a`, mimeType: 'audio/m4a' } });
+      } catch (e) {
+        Alert.alert('Audio', e instanceof Error ? e.message : 'Could not save recording');
+      }
+      return;
+    }
+    try {
+      const status = await AudioModule.requestRecordingPermissionsAsync();
+      if (!status.granted) throw new Error('Microphone permission denied');
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+    } catch (e) {
+      Alert.alert('Audio', e instanceof Error ? e.message : 'Could not start recording');
+    }
+  }
+
+  async function handleScan() {
+    // There's no built-in Expo document scanner (verified against the v57
+    // docs, per AGENTS.md — Expo has no plans to add one; the real
+    // community options wrap ML Kit/VisionKit and need a custom dev
+    // client, which this app isn't running as — it's Expo Go). What's
+    // real and works today: capture a photo, upload it, then run it
+    // through the OCR pipeline that's already wired to Anthropic's
+    // vision model. Genuine text extraction from a photographed
+    // document — just without page-edge detection/perspective
+    // correction, which would need that custom dev client.
+    if (scanning) return;
+    try {
+      const asset = await captureFromCamera();
+      if (!asset) return;
+      setScanning(true);
+      const file = await upload.mutateAsync({ asset });
+      const result = await ocrApi.process(file.id);
+      Alert.alert(
+        'Scan complete',
+        result.extractedText?.trim() ? result.extractedText.slice(0, 500) : 'No text was found in the photo.',
+      );
+    } catch (e) {
+      Alert.alert('Scan', e instanceof Error ? e.message : 'Could not scan document');
+    } finally {
+      setScanning(false);
+    }
   }
 
   return (
@@ -134,6 +203,9 @@ export default function HomeScreen() {
           </IconButton>
           <IconButton>
             <IconBell size={18} />
+          </IconButton>
+          <IconButton onPress={() => router.push('/profile')}>
+            <IconUser size={18} />
           </IconButton>
         </View>
       </View>
@@ -246,11 +318,19 @@ export default function HomeScreen() {
           <SectionHeader title="Quick actions" />
           <View style={styles.quickGrid}>
             <QuickAction icon={<IconCamera />} label="Camera" onPress={handleCamera} />
-            <QuickAction icon={<IconScan />} label="Scan" onPress={handleScan} />
+            <QuickAction icon={<IconImage />} label="Media" onPress={handleMedia} />
             <QuickAction icon={<IconUpload />} label="Upload" onPress={handleUpload} />
+            <QuickAction
+              icon={<IconMic color={recorderState.isRecording ? Colors.danger : '#fff'} />}
+              label={recorderState.isRecording ? 'Stop' : 'Audio'}
+              onPress={handleAudio}
+            />
+            <QuickAction icon={<IconScan />} label={scanning ? 'Scanning…' : 'Scan'} onPress={handleScan} />
             <QuickAction icon={<IconFileText size={19} />} label="Calc" onPress={() => router.push('/(tabs)/calculator')} />
           </View>
           {upload.isPending && <Text style={styles.uploadingText}>Uploading…</Text>}
+          {recorderState.isRecording && <Text style={styles.recordingText}>Recording… tap Audio again to stop and upload</Text>}
+          {scanning && <Text style={styles.uploadingText}>Scanning document…</Text>}
         </View>
 
         {activity.isLoading ? null : activityGroups.length === 0 ? (
@@ -424,12 +504,20 @@ const styles = StyleSheet.create({
   },
   quickGrid: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: 8,
   },
   uploadingText: {
     fontFamily: Fonts.medium,
     fontSize: 11,
     color: Colors.lime,
+    marginTop: 8,
+    textAlign: 'center',
+  },
+  recordingText: {
+    fontFamily: Fonts.medium,
+    fontSize: 11,
+    color: Colors.danger,
     marginTop: 8,
     textAlign: 'center',
   },

@@ -20,7 +20,8 @@ export function QuickAction({ icon, label, onPress }: QuickActionProps) {
 
 const styles = StyleSheet.create({
   item: {
-    flex: 1,
+    flexBasis: '31%',
+    flexGrow: 1,
     alignItems: 'center',
     gap: 7,
     paddingVertical: 12,

@@ -1,4 +1,4 @@
-import { useRouter } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -13,6 +13,10 @@ const PASSCODE_LENGTH = 4;
 
 export default function PasscodeSetupScreen() {
   const router = useRouter();
+  // First-time setup (post-verify) has no redirectTo and lands in the app
+  // as before. Reached from Profile's "Change passcode" instead, it
+  // carries redirectTo=/profile so saving returns you there, not Home.
+  const { redirectTo } = useLocalSearchParams<{ redirectTo?: string }>();
   const [stage, setStage] = useState<'create' | 'confirm'>('create');
   const [first, setFirst] = useState('');
   const [digits, setDigits] = useState('');
@@ -37,7 +41,7 @@ export default function PasscodeSetupScreen() {
     if (next === first) {
       setTimeout(async () => {
         await useSession.getState().setPasscode(next);
-        router.replace('/(tabs)');
+        router.replace(redirectTo && redirectTo.startsWith('/') ? (redirectTo as never) : '/(tabs)');
       }, 200);
     } else {
       setError('Passcodes didn’t match — try again');

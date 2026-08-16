@@ -17,14 +17,20 @@ expo-env.d.ts
 apps/api/.next/
 next-env.d.ts
 
+# build output
+build/
+
 # Native
 .kotlin/
 *.orig.*
 *.jks
 *.p8
 *.p12
-*.key
 *.mobileprovision
+
+# generated native folders (managed Expo workflow — no native projects checked in)
+apps/mobile/ios/
+apps/mobile/android/
 
 # Metro
 .metro-health-check*
@@ -36,18 +42,23 @@ yarn-error.*
 
 # macOS
 .DS_Store
-*.pem
-
-# local env files
-.env
-.env*.local
-!.env.example
 
 # typescript
 *.tsbuildinfo
 
-example
+# ============================================================
+# Secrets — never commit real credentials. See .env.example in
+# apps/api/ and apps/mobile/ for the variables each app needs.
+# ============================================================
+.env
+.env.local
+.env.development
+.env.development.local
+.env.production
+.env.production.local
+.env.*.local
+!.env.example
 
-# generated native folders
-apps/mobile/ios
-apps/mobile/android
+*.pem
+*.key
+*.crt

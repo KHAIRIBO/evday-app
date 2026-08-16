@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomInt } from 'node:crypto';
 
 // Node-runtime-only token helpers, split out of lib/auth.ts so that file
 // (requireUser, used by the edge-runtime streaming route) stays free of
@@ -16,6 +16,9 @@ export function hashToken(token: string): string {
 }
 
 export function generateEmailCode(): { code: string; hash: string } {
-  const code = String(Math.floor(100000 + Math.random() * 900000));
+  // crypto.randomInt, not Math.random() — the latter isn't a CSPRNG and
+  // has no place generating anything used as a credential, even a
+  // short-lived 6-digit one.
+  const code = String(randomInt(100000, 1000000));
   return { code, hash: hashToken(code) };
 }

@@ -12,11 +12,17 @@ type ListItemProps = {
   meta: string;
   trailing?: 'chevron' | 'kebab';
   onPress?: () => void;
+  /** Long-press anywhere on the row — kept as a fallback gesture. */
+  onLongPress?: () => void;
+  /** Tapping the kebab icon itself, when trailing="kebab" — the more
+   * discoverable of the two ways to reach the same action sheet. Its own
+   * nested Pressable, so it doesn't also fire the row's onPress. */
+  onKebabPress?: () => void;
 };
 
-export function ListItem({ icon, solid, name, meta, trailing = 'chevron', onPress }: ListItemProps) {
+export function ListItem({ icon, solid, name, meta, trailing = 'chevron', onPress, onLongPress, onKebabPress }: ListItemProps) {
   return (
-    <Pressable style={styles.row} onPress={onPress}>
+    <Pressable style={styles.row} onPress={onPress} onLongPress={onLongPress}>
       <View style={[styles.thumb, solid && styles.thumbSolid]}>{icon}</View>
       <View style={styles.text}>
         <Text style={styles.name} numberOfLines={1}>
@@ -26,7 +32,15 @@ export function ListItem({ icon, solid, name, meta, trailing = 'chevron', onPres
           {meta}
         </Text>
       </View>
-      {trailing === 'chevron' ? <IconChevronRight /> : <IconMoreVertical />}
+      {trailing === 'chevron' ? (
+        <IconChevronRight />
+      ) : onKebabPress ? (
+        <Pressable onPress={onKebabPress} hitSlop={10} style={styles.kebabHit}>
+          <IconMoreVertical />
+        </Pressable>
+      ) : (
+        <IconMoreVertical />
+      )}
     </Pressable>
   );
 }
@@ -67,5 +81,8 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     color: 'rgba(255,255,255,0.45)',
     marginTop: 2,
+  },
+  kebabHit: {
+    padding: 4,
   },
 });

@@ -391,3 +391,84 @@ export function IconEye({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
     </Svg>
   );
 }
+
+export function IconUser({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+      <Circle cx="12" cy="7" r="4" />
+    </Svg>
+  );
+}
+
+export function IconLogOut({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+      <Path d="m16 17 5-5-5-5" />
+      <Path d="M21 12H9" />
+    </Svg>
+  );
+}
+
+export function IconMic({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Rect x="9" y="2" width="6" height="12" rx="3" />
+      <Path d="M5 10v2a7 7 0 0 0 14 0v-2" />
+      <Path d="M12 19v3" />
+    </Svg>
+  );
+}
+
+export function IconPlay({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill={color} stroke="none">
+      <Path d="M8 5v14l11-7Z" />
+    </Svg>
+  );
+}
+
+export function IconPause({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill={color} stroke="none">
+      <Rect x="6" y="4" width="4" height="16" rx="1" />
+      <Rect x="14" y="4" width="4" height="16" rx="1" />
+    </Svg>
+  );
+}
+
+export function IconMusic({ size, color = '#fff', strokeWidth = 2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M9 18V5l12-2v13" />
+      <Circle cx="6" cy="18" r="3" />
+      <Circle cx="18" cy="16" r="3" />
+    </Svg>
+  );
+}
+
+export function IconCheck({ size, color = '#fff', strokeWidth = 2.4 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M20 6 9 17l-5-5" />
+    </Svg>
+  );
+}
+
+export function IconX({ size, color = '#fff', strokeWidth = 2.2 }: IconProps) {
+  const s = base(size, strokeWidth);
+  return (
+    <Svg width={s.size} height={s.size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth={s.strokeWidth} strokeLinecap="round" strokeLinejoin="round">
+      <Path d="M18 6 6 18" />
+      <Path d="M6 6l12 12" />
+    </Svg>
+  );
+}

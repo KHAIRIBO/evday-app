@@ -22,8 +22,8 @@ export default function LoginScreen() {
   const [busy, setBusy] = useState(false);
 
   // No refresh token on this device at all — nothing to unlock. Straight
-  // to email entry (covers first-ever launch and post-logout).
-  if (!hasStoredSession) return <Redirect href="/(auth)/email" />;
+  // to the login screen (covers first-ever launch and post-logout).
+  if (!hasStoredSession) return <Redirect href="/(auth)/signin" />;
   // A session exists but passcode setup never finished (app closed
   // mid-flow) — finish it before unlocking into the app.
   if (!hasPasscode) return <Redirect href="/(auth)/passcode-setup" />;
@@ -49,7 +49,7 @@ export default function LoginScreen() {
       await useSession.getState().clearSession();
       await useSession.getState().clearPasscode();
       setError('Your session expired — please sign in again');
-      setTimeout(() => router.replace('/(auth)/email'), 1200);
+      setTimeout(() => router.replace('/(auth)/signin'), 1200);
     } finally {
       setBusy(false);
     }
@@ -92,7 +92,7 @@ export default function LoginScreen() {
   async function forgotPasscode() {
     await useSession.getState().clearPasscode();
     await useSession.getState().clearSession();
-    router.replace('/(auth)/email');
+    router.replace('/(auth)/signin');
   }
 
   if (view === 'touchid') {
