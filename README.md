@@ -104,8 +104,8 @@ khairibo/
 ### 1. Clone and install
 
 ```bash
-git clone https://github.com/<your-username>/khairibo.git
-cd khairibo
+git clone https://github.com/KHAIRIBO/evday-app.git
+cd evday-app
 pnpm install
 ```
 
